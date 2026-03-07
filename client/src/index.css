@@ -1,0 +1,296 @@
+/* ─── Google Fonts ──────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Outfit:wght@200;300;400;500;600&family=JetBrains+Mono:wght@200;300;400;500&display=swap');
+
+@import "tailwindcss";
+
+/* ─── TailwindCSS v4 Theme ──────────────────────────────────────── */
+@theme {
+  --color-bg: #010206; /* Pitch black for absolute contrast */
+  --color-surface: rgba(255, 255, 255, 0.015);
+  --color-surface-hover: rgba(255, 255, 255, 0.035);
+  --color-primary: #c4b5fd; /* Softened violet for elegance */
+  --color-primary-glow: rgba(196, 181, 253, 0.5);
+  --color-accent: #2dd4bf; /* Stunning vibrant teal */
+  --color-accent-glow: rgba(45, 212, 191, 0.5);
+  --color-text: #f0f4f8;
+  --color-muted: #8292a6;
+  --color-danger: #fb7185;
+  --color-danger-glow: rgba(251, 113, 133, 0.3);
+  --color-glass-border: rgba(255, 255, 255, 0.06);
+  --color-glass-border-hover: rgba(255, 255, 255, 0.12);
+
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Outfit', system-ui, sans-serif; /* Cleaner, more modern sans */
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --animate-breathe: breathe 6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  --animate-slide-up: slide-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-fade-in: fade-in 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-aura: aurora-flow 20s ease-in-out infinite alternate;
+  --animate-float: float 10s ease-in-out infinite;
+  --animate-pulse-soft: pulse-soft 5s ease-in-out infinite;
+}
+
+/* ─── Keyframe Animations ────────────────────────────────────────── */
+@keyframes breathe {
+  0%, 100% { transform: scale(1); opacity: 0.5; filter: blur(2px); }
+  50% { transform: scale(1.15); opacity: 0.9; filter: blur(0px); }
+}
+
+@keyframes slide-up {
+  from { transform: translateY(24px) scale(0.98); opacity: 0; filter: blur(4px); }
+  to { transform: translateY(0) scale(1); opacity: 1; filter: blur(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; filter: blur(8px); }
+  to { opacity: 1; filter: blur(0); }
+}
+
+@keyframes aurora-flow {
+  0% {
+    background-position: 0% 50%;
+    filter: hue-rotate(0deg) saturate(100%);
+    transform: scale(1) rotate(0deg);
+  }
+  33% {
+    background-position: 50% 100%;
+    filter: hue-rotate(15deg) saturate(130%);
+    transform: scale(1.05) rotate(1deg);
+  }
+  66% {
+    background-position: 100% 0%;
+    filter: hue-rotate(-10deg) saturate(110%);
+    transform: scale(1.1) rotate(-1deg);
+  }
+  100% {
+    background-position: 0% 50%;
+    filter: hue-rotate(0deg) saturate(100%);
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 0.4; transform: scale(0.98); }
+  50% { opacity: 0.7; transform: scale(1.02); }
+}
+
+/* ─── Base Styles ─────────────────────────────────────────────────── */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  min-height: 100vh;
+  overflow-x: hidden;
+  letter-spacing: 0.01em;
+}
+
+/* ─── Background Effects ──────────────────────────────────────────── */
+.aether-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background-color: var(--color-bg);
+}
+
+/* Spectacular Aurora Mesh Gradient Background */
+.aether-bg::before {
+  content: '';
+  position: absolute;
+  inset: -50%;
+  background: 
+    radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 90% 10%, rgba(45, 212, 191, 0.12) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 80%, rgba(56, 189, 248, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(192, 132, 252, 0.08) 0%, transparent 55%),
+    radial-gradient(circle at 80% 80%, rgba(244, 114, 182, 0.05) 0%, transparent 60%);
+  animation: aurora-flow 25s ease-in-out infinite alternate;
+  background-size: 200% 200%;
+  mix-blend-mode: screen;
+  filter: blur(100px);
+  will-change: transform, background-position;
+}
+
+/* Fine-grained cinematic noise texture */
+.aether-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 180px 180px;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+
+/* More subtle, organic star field */
+.particle-field {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 15% 25%, rgba(255,255,255,0.2) 0%, transparent 100%),
+    radial-gradient(1px 1px at 35% 65%, rgba(167,139,250,0.3) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 10% 85%, rgba(255,255,255,0.15) 0%, transparent 100%),
+    radial-gradient(1px 1px at 75% 20%, rgba(129,140,248,0.2) 0%, transparent 100%),
+    radial-gradient(2px 2px at 85% 75%, rgba(167,139,250,0.15) 0%, transparent 100%),
+    radial-gradient(1px 1px at 50% 50%, rgba(103,232,249,0.2) 0%, transparent 100%),
+    radial-gradient(1px 1px at 90% 10%, rgba(255,255,255,0.25) 0%, transparent 100%),
+    radial-gradient(1px 1px at 30% 90%, rgba(167,139,250,0.2) 0%, transparent 100%);
+  animation: pulse-soft 6s ease-in-out infinite;
+  opacity: 0.7;
+}
+
+/* ─── Ultra-Premium Glassmorphism ─────────────────────────────────── */
+/* Base mixins for lighting effects */
+.glass, .glass-static, .glass-strong {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* Top internal highlight for physical depth */
+.glass::before, .glass-static::before, .glass-strong::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.glass {
+  background: linear-gradient(145deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.005) 100%);
+  backdrop-filter: blur(48px) saturate(150%);
+  -webkit-backdrop-filter: blur(48px) saturate(150%);
+  border: 1px solid rgba(255,255,255,0.03);
+  border-radius: 24px;
+  box-shadow: 
+    0 20px 40px -10px rgba(0,0,0,0.5), 
+    inset 0 1px 0 0 rgba(255,255,255,0.05),
+    inset 0 0 20px 1px rgba(255,255,255,0.01);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass:hover {
+  background: linear-gradient(145deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+  border-color: rgba(255,255,255,0.08);
+  box-shadow: 
+    0 30px 60px -12px rgba(0,0,0,0.7), 
+    0 0 20px rgba(139, 92, 246, 0.1), /* Subtle purple glow on hover */
+    inset 0 1px 0 0 rgba(255,255,255,0.08),
+    inset 0 0 20px 1px rgba(255,255,255,0.02);
+  transform: translateY(-4px) scale(1.005);
+}
+
+.glass-static {
+  background: linear-gradient(145deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.005) 100%);
+  backdrop-filter: blur(48px) saturate(150%);
+  -webkit-backdrop-filter: blur(48px) saturate(150%);
+  border: 1px solid rgba(255,255,255,0.03);
+  border-radius: 24px;
+  box-shadow: 
+    0 20px 40px -10px rgba(0,0,0,0.5),
+    inset 0 1px 0 0 rgba(255,255,255,0.05);
+}
+
+.glass-strong {
+  background: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+  backdrop-filter: blur(64px) saturate(180%);
+  -webkit-backdrop-filter: blur(64px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-top: 1px solid rgba(255,255,255,0.15); /* Stronger top edge */
+  border-radius: 24px;
+  box-shadow: 
+    0 25px 50px -12px rgba(0,0,0,0.6),
+    inset 0 1px 0 0 rgba(255,255,255,0.08),
+    inset 0 1px 1px rgba(255,255,255,0.1);
+}
+
+/* ─── Scrollbar ───────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* ─── Selection & Focus ───────────────────────────────────────────── */
+::selection {
+  background: rgba(167, 139, 250, 0.4);
+  color: #fff;
+  text-shadow: 0 0 8px rgba(255,255,255,0.5);
+}
+
+/* Elegant focus rings */
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-bg), 0 0 0 4px var(--color-primary);
+  border-radius: inherit;
+  transition: box-shadow 0.2s ease;
+}
+
+/* ─── Utility Classes ─────────────────────────────────────────────── */
+.text-gradient {
+  background: linear-gradient(135deg, #e2e8f0 0%, #a78bfa 50%, #818cf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 30px rgba(167, 139, 250, 0.2);
+}
+
+/* More refined, physical-looking glows */
+.glow-primary {
+  box-shadow: 0 0 30px var(--color-primary-glow), 0 0 60px rgba(167, 139, 250, 0.1), inset 0 0 10px rgba(167, 139, 250, 0.2);
+}
+
+.glow-accent {
+  box-shadow: 0 0 30px var(--color-accent-glow), 0 0 60px rgba(129, 140, 248, 0.1), inset 0 0 10px rgba(129, 140, 248, 0.2);
+}
+
+/* Message bubbles styling updates */
+textarea::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+  font-weight: 300;
+}
+
+input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+  font-weight: 300;
+}
