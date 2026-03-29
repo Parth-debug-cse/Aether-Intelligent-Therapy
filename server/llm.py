@@ -1,7 +1,17 @@
 import json
 import logging
+import asyncio
+from openai import OpenAI
 
 logger = logging.getLogger(__name__)
+
+import os
+
+# Lumina-Edge Configuration
+LUMINA_BASE_URL = os.getenv("LUMINA_BASE_URL", "http://localhost:1235/v1")
+LUMINA_MODEL = os.getenv("LUMINA_MODEL", "empathic.gguf")
+
+client = OpenAI(base_url=LUMINA_BASE_URL, api_key="not-needed")
 
 SYSTEM_PROMPT = """You are Aether, a compassionate and clinically-informed AI companion for self-reflection. 
 You are NOT a replacement for a licensed therapist.
@@ -67,7 +77,7 @@ def build_messages(conversation_history: list[dict], user_message: str) -> list[
 
 
 async def chat_with_llm(conversation_history: list[dict], user_message: str) -> dict:
-    """Send a message to the LLM and get a structured response."""
+    """Send a message to the Lumina-Edge LLM and get a structured response."""
     
     # Check for crisis first
     is_crisis = detect_crisis(user_message)
@@ -75,14 +85,15 @@ async def chat_with_llm(conversation_history: list[dict], user_message: str) -> 
     messages = build_messages(conversation_history, user_message)
     
     try:
-        import ollama
-        response = ollama.chat(
-            model='llama3',  # or 'mistral', or your fine-tuned model
+        response = await asyncio.to_thread(
+            client.chat.completions.create,
+            model=LUMINA_MODEL,
             messages=messages,
-            format='json',
+            response_format={"type": "json_object"},
+            temperature=0.7
         )
         
-        raw = response['message']['content']
+        raw = response.choices[0].message.content
         logger.info(f"LLM raw response: {raw[:200]}")
         
         # Parse the JSON response
@@ -114,11 +125,8 @@ async def chat_with_llm(conversation_history: list[dict], user_message: str) -> 
         
         return result
         
-    except ImportError:
-        logger.warning("Ollama package not installed, using fallback response")
-        return _fallback_response(user_message, is_crisis)
     except Exception as e:
-        logger.error(f"LLM error: {e}")
+        logger.error(f"Lumina-Edge LLM error: {e}")
         return _fallback_response(user_message, is_crisis)
 
 
@@ -134,7 +142,7 @@ def _fallback_response(user_message: str, is_crisis: bool) -> dict:
     else:
         message = ("I appreciate you sharing that with me. I want to give you a thoughtful response, "
                    "but I'm having trouble connecting to my language model right now. "
-                   "Please make sure Ollama is running with `ollama serve` and that a model like `llama3` is available. "
+                   "Please make sure Lumina-Edge is running in API mode (`./core/lumina-launcher.sh --mode api`). "
                    "In the meantime, I'm here — take a deep breath if you need one. 🫧")
         mood = 5
     
@@ -172,16 +180,16 @@ Conversation:
         summary_prompt += f"\n{role}: {content}"
     
     try:
-        import ollama
-        response = ollama.chat(
-            model='llama3',
+        response = await asyncio.to_thread(
+            client.chat.completions.create,
+            model=LUMINA_MODEL,
             messages=[
                 {"role": "system", "content": "You are Aether, generating a session summary. Respond only in valid JSON."},
                 {"role": "user", "content": summary_prompt}
             ],
-            format='json',
+            response_format={"type": "json_object"}
         )
-        raw = response['message']['content']
+        raw = response.choices[0].message.content
         parsed = json.loads(raw)
         return {
             "reflection": parsed.get("reflection", "Thank you for sharing today."),
@@ -193,3 +201,16 @@ Conversation:
             "reflection": "Thank you for taking the time to reflect today. Every conversation is a step toward understanding yourself better.",
             "exercise": "Try the 'thought record' exercise: when you notice a strong negative thought this week, write it down, identify the emotion, and ask yourself — what would I say to a friend thinking this?",
         }
+
+
+async def check_llm_status() -> bool:
+    """Check if Lumina-Edge API is responsive."""
+    try:
+        # Use a simple timeout-protected request
+        import httpx
+        async with httpx.AsyncClient() as h_client:
+            response = await h_client.get(f"{LUMINA_BASE_URL}/models", timeout=2.0)
+            return response.status_code == 200
+    except Exception as e:
+        logger.debug(f"Health check failed: {e}")
+        return False

@@ -1,14 +1,14 @@
 import json
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
-from server.auth import get_current_user_id
-from server.database import (
+from auth import get_current_user_id
+from database import (
     create_session, get_session, get_user_sessions,
     end_session, update_session_title, add_message,
     get_session_messages, get_session_mood_arc,
     get_session_distortion_counts
 )
-from server.llm import chat_with_llm, generate_session_summary
+from llm import chat_with_llm, generate_session_summary
 
 router = APIRouter(tags=["sessions"])
 
